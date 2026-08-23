@@ -52,6 +52,22 @@ The API is upstream's, unchanged. See the
 for the full surface: streaming, batching, backend selection, cancellation and
 logging.
 
+## Model lifetime
+
+Release the `Model`, and any `Session` built from it, before the process exits.
+ggml's Metal backend asserts that every Metal resource has been freed when its
+device is torn down during `exit()`, so a model still alive at quit aborts the
+process:
+
+```
+ggml-metal-device.m: GGML_ASSERT([rsets->data count] == 0) failed
+```
+
+Transcription has already finished by then, so nothing is lost, but it surfaces
+as a crash report on a shipped app. Hold the model in something you can tear
+down, an owner object you can release or a scope that ends, rather than in a
+global or a `let` at file scope that lives until termination.
+
 ## Tests
 
 ```sh
