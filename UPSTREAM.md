@@ -136,5 +136,12 @@ the Metal backend initialising on-device.
    update the `url:` and `checksum:` in `Package.swift` together with the pins
    in this file.
 
+Never move a tag that has already been pushed. SwiftPM records the commit it
+first saw for a version in `~/.swiftpm/security/fingerprints/`, and on any later
+resolve it hard-fails with `Revision <new> ... does not match previously
+recorded value <old>`. The only recovery is deleting that machine's fingerprint
+file. Corrections to a published version go out as a new version, never as a
+retag.
+
 Consumers should depend on an exact version. The binary target is pinned to one
 release asset, so a floating range would silently swap the native library.
